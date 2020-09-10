@@ -1,4 +1,3 @@
-#include <kelimelik.h>
 #include <errno.h>
 #include "kelimelik-private.h"
 #include <string.h>

@@ -1,5 +1,6 @@
-#ifndef __KELIMELIK_PRIVATE_H
-#define __KELIMELIK_PRIVATE_H
+#ifndef __LIBKELIMELIK_PRIVATE_H
+#define __LIBKELIMELIK_PRIVATE_H
+
 #include <kelimelik.h>
 #include <errno.h>
 
