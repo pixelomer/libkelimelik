@@ -1,5 +1,5 @@
-#ifndef __LIBKELIMELIK_H
-#define __LIBKELIMELIK_H
+#ifndef __KELIMELIK_H
+#define __KELIMELIK_H
 
 #include <stdint.h>
 #include <stdio.h>
