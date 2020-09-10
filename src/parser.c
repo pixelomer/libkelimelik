@@ -264,7 +264,6 @@ kelimelik_error kelimelik_parser_advance(
 	kelimelik_packet ***new_packets_pt,
 	size_t *new_packets_length_pt
 ) {
-	#warning FIXME: kelimelik_parser_advance doesn't work if (bytes_length > 1)
 	size_t new_packets_count = 0;
 	kelimelik_error error = _KELIMELIK_SUCCESS;
 	while (bytes_length) {
@@ -280,6 +279,7 @@ kelimelik_error kelimelik_parser_advance(
 		);
 		bytes_length -= bytes_to_read;
 		memcpy(target_buffer + self->index, bytes, bytes_to_read);
+		bytes += bytes_to_read;
 		self->bytes_remaining -= bytes_to_read;
 		if (!self->bytes_remaining) {
 			uint32_t packet_size = ntohl(*(uint32_t *)&self->packet_size_buffer[0]);
@@ -292,8 +292,8 @@ kelimelik_error kelimelik_parser_advance(
 					packet_size + 4,
 					&packet
 				);
-				//free(self->packet_buffer);
-				//self->packet_buffer = NULL;
+				free(self->packet_buffer);
+				self->packet_buffer = NULL;
 				if (!KELIMELIK_IS_ERROR(error)) {
 					new_packets_count++;
 					if (new_packets_count > self->packet_count) {
