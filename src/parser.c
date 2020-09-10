@@ -2,8 +2,6 @@
 #include <stdio.h>
 #include <string.h>
 
-#define KELIMELIK_SWAP_ARRAYS 0
-
 void kelimelik_parser_free_old_packets(kelimelik_parser *self) {
 	for (size_t i=0; i<self->packet_count; i++) {
 		if (self->packets[i]) {
@@ -212,11 +210,7 @@ kelimelik_error kelimelik_parser_decode(
 						kelimelik_string **strings = malloc(sizeof(*strings) * count);
 						for (size_t i=0; i<string_array_data->item_count; i++) {
 							error = kelimelik_string_new_v2(
-								#if KELIMELIK_SWAP_ARRAYS
-								&strings[string_array_data->item_count-i-1],
-								#else
 								&strings[i],
-								#endif
 								bytes + string_array_data->items[i].offset,
 								string_array_data->items[i].length
 							);
@@ -244,24 +238,6 @@ kelimelik_error kelimelik_parser_decode(
 					default:
 						break;
 				}
-				#if KELIMELIK_SWAP_ARRAYS
-				for (size_t i=0, j=array->item_count-1; i<array->item_count; i++) {
-					switch (array->type) {
-						#define case(x) case _KELIMELIK_CONCAT_2(KELIMELIK_OBJECT_UINT, x): { \
-							_KELIMELIK_CONCAT_3(uint, x, _t) tmp = array-> _KELIMELIK_CONCAT_3(uint, x, s) [i]; \
-							array-> _KELIMELIK_CONCAT_3(uint, x, s) [i] = array-> _KELIMELIK_CONCAT_3(uint, x, s) [j]; \
-							array-> _KELIMELIK_CONCAT_3(uint, x, s) [j] = tmp; \
-							break; \
-						}
-						case(8)
-						case(32)
-						case(64)
-						#undef case
-						default:
-							break;
-					}
-				}
-				#endif
 				bytes += bytes_needed;
 				kelimelik_packet_set_array(packet, i, array);
 				break;

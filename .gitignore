@@ -1,3 +1,4 @@
 /account-info
 /proxy
 /*.o
+/tests
