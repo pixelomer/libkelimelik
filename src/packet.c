@@ -3,7 +3,6 @@
 #include <string.h>
 #include <stdio.h>
 #include <assert.h>
-#include <signal.h>
 #include <stdarg.h>
 
 static void re_sprintf(char **buffer, char *format, ...) {
