@@ -2,6 +2,7 @@
 #include <poll.h>
 #include <unistd.h>
 #include <sys/socket.h>
+#include <signal.h>
 #include <netinet/in.h>
 #include <string.h>
 #include <limits.h>
@@ -74,6 +75,9 @@ int main(int argc, char **argv) {
 	int accept_socket = socket(PF_INET, SOCK_STREAM, 0);
 	assert(accept_socket != -1);
 
+	// Ignore SIGPIPE
+	signal(SIGPIPE, SIG_IGN);
+
 	// Create an empty file descriptor
 	{
 		int pipe_fds[2];
@@ -127,7 +131,7 @@ int main(int argc, char **argv) {
 			if (poll_fds[i].revents & POLLIN) {
 				do {
 					uint8_t byte;
-					if (read(poll_fds[i].fd, &byte, 1) != 1) {
+					if (recv(poll_fds[i].fd, &byte, 1, 0) != 1) {
 						break;
 					}
 					kelimelik_packet **new_packets;
@@ -159,7 +163,7 @@ int main(int argc, char **argv) {
 							fprintf(stderr, "Encode error: %s\n", kelimelik_strerror(error));
 							assert(0);
 						}
-						write(connections[connections[i-1].peer_index].fd, encoded_packet, encoded_packet_len);
+						send(connections[connections[i-1].peer_index].fd, encoded_packet, encoded_packet_len, 0);
 						free(encoded_packet);
 						printf("Transmitted this data to #%d.\n\n", connections[connections[i-1].peer_index].fd);
 					}

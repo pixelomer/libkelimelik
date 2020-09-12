@@ -1,4 +1,5 @@
 #include <kelimelik.h>
+#include <sys/socket.h>
 #include <unistd.h>
 #include <string.h>
 #include <stdio.h>
@@ -21,7 +22,7 @@ int main(int argc, char **argv) {
 	size_t encoded_packet_length;
 	kelimelik_packet_encode(packet, &encoded_packet, &encoded_packet_length);
 	kelimelik_packet_free(packet);
-	write(fd, encoded_packet, encoded_packet_length);
+	send(fd, encoded_packet, encoded_packet_length, 0);
 	free(encoded_packet);
 	kelimelik_parser *parser;
 	kelimelik_parser_new(&parser);
@@ -32,8 +33,8 @@ int main(int argc, char **argv) {
 	uint32_t total = 0;
 	while (1) {
 		uint8_t val;
-		if (read(fd, &val, 1) != 1) {
-			fprintf(stderr, "read() failed.\n");
+		if (recv(fd, &val, 1, 0) != 1) {
+			fprintf(stderr, "recv() failed.\n");
 			return EXIT_FAILURE;
 		}
 		kelimelik_packet **new_packets;

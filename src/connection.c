@@ -6,6 +6,8 @@
 #include "kelimelik-private.h"
 #include <sys/types.h>
 
+#define USE_DOMAIN 0
+
 // Doesn't do anything special, just returns a socket that is
 // connected to the official Kelimelik server.
 kelimelik_error kelimelik_connection_new(int *fd_out) {
@@ -21,8 +23,12 @@ kelimelik_error kelimelik_connection_new(int *fd_out) {
 	}
 
 	// Get host
-	//struct hostent *server = gethostbyname("kelimelikserver.he2apps.com");
-	struct hostent *server = gethostbyname("141.98.204.163");
+	struct hostent *server;
+	#if USE_DOMAIN
+		server = gethostbyname("kelimelikserver.he2apps.com");
+	#else
+		server = gethostbyname("141.98.204.163");
+	#endif
 	if (!server) {
 		return _KELIMELIK_ERROR_SYSCALL(gethostbyname);
 	}
