@@ -251,7 +251,15 @@ kelimelik_error kelimelik_verify_packet(kelimelik_packet *self, const char *form
 		else {
 			type_in_packet = self->objects[i].type;
 		}
-		if (value_type != type_in_packet) {
+		if (
+			(value_type != KELIMELIK_OBJECT_UNSPECIFIED) ?
+			(value_type != type_in_packet) :
+			(
+				(type_in_packet != KELIMELIK_OBJECT_UINT64) &&
+				(type_in_packet != KELIMELIK_OBJECT_UINT32) &&
+				(type_in_packet != KELIMELIK_OBJECT_UINT8)
+			)
+		) {
 			return _KELIMELIK_ERROR_DIFFERENT_FORMAT;
 		}
 	}
