@@ -39,7 +39,9 @@ struct kelimelik_error {
 		KELIMELIK_ERROR_UNSPECIFIED_TYPES = 1,
 		KELIMELIK_ERROR_INVALID_ARGUMENT = 2,
 		KELIMELIK_ERROR_INVALID_TYPE = 3,
-		KELIMELIK_ERROR_NOT_IMPLEMENTED = 4
+		KELIMELIK_ERROR_NOT_IMPLEMENTED = 4,
+		KELIMELIK_ERROR_INVALID_FORMAT = 5,
+		KELIMELIK_ERROR_DIFFERENT_FORMAT = 6
 	} kelimelik_errno;
 };
 
@@ -187,6 +189,7 @@ kelimelik_error kelimelik_uint_array_new(kelimelik_array **out, enum kelimelik_o
 // Packets
 void kelimelik_packet_free(kelimelik_packet *packet);
 char *kelimelik_packet_description(kelimelik_packet *self);
+kelimelik_error kelimelik_verify_packet(kelimelik_packet *self, const char *format);
 kelimelik_error kelimelik_packet_new_v1(kelimelik_packet **out, const char *header, uint8_t size);
 kelimelik_error kelimelik_packet_new_v2(kelimelik_packet **out, kelimelik_string *header, uint8_t size);
 kelimelik_error kelimelik_packet_set_uint64(kelimelik_packet *packet, uint8_t index, uint64_t value);
@@ -217,8 +220,7 @@ kelimelik_error kelimelik_parser_advance(
 kelimelik_error kelimelik_parser_advance_single(
 	kelimelik_parser *self,
 	uint8_t byte,
-	kelimelik_packet ***new_packets,
-	size_t *new_packets_length
+	kelimelik_packet **new_packet
 );
 void kelimelik_parser_free(kelimelik_parser *self);
 

@@ -332,14 +332,22 @@ kelimelik_error kelimelik_parser_advance(
 kelimelik_error kelimelik_parser_advance_single(
 	kelimelik_parser *self,
 	uint8_t byte,
-	kelimelik_packet ***new_packets,
-	size_t *new_packets_length
+	kelimelik_packet **new_packet
 ) {
-	return kelimelik_parser_advance(
+	kelimelik_packet **real_new_packets;
+	size_t real_new_packets_len;
+	kelimelik_error error = kelimelik_parser_advance(
 		self,
 		&byte,
 		1,
-		new_packets,
-		new_packets_length
+		&real_new_packets,
+		&real_new_packets_len
 	);
+	if (!KELIMELIK_IS_ERROR(error) && real_new_packets_len) {
+		*new_packet = real_new_packets[0];
+	}
+	else {
+		*new_packet = NULL;
+	}
+	return error;
 }

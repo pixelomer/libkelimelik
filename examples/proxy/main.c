@@ -134,11 +134,9 @@ int main(int argc, char **argv) {
 					if (recv(poll_fds[i].fd, &byte, 1, 0) != 1) {
 						break;
 					}
-					kelimelik_packet **new_packets;
-					size_t new_packets_count;
-					kelimelik_parser_advance_single(connections[i-1].parser, byte, &new_packets, &new_packets_count);
-					if (new_packets_count) {
-						kelimelik_packet *packet = *new_packets;
+					kelimelik_packet *packet;
+					kelimelik_parser_advance_single(connections[i-1].parser, byte, &packet);
+					if (packet) {
 						char *description = kelimelik_packet_description(packet);
 						printf("[%s] [#%d] Received: %s\n",
 							connections[i-1].is_server ? "Server" : "Client",

@@ -5,7 +5,9 @@ const char *other_errors[] = {
 	"The packet contained one or more objects with no specified type.",
 	"Invalid argument at index %d.",
 	"Encountered an invalid type while parsing.",
-	"This function is not implemented."
+	"This function is not implemented.",
+	"Invalid format passed to kelimelik_verify_packet().",
+	"Packet format doesn't match the specified format."
 };
 
 const char *function_names[] = {

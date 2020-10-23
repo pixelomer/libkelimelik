@@ -214,6 +214,53 @@ kelimelik_error kelimelik_packet_encoded_size(kelimelik_packet *self, size_t *si
 	return _KELIMELIK_SUCCESS;
 }
 
+kelimelik_error kelimelik_verify_packet(kelimelik_packet *self, const char *format) {
+	uint16_t i;
+	for (i=0; i<self->object_count; i++) {
+		enum kelimelik_object_type value_type;
+		bool is_array = ((format[i] >= 'A') && (format[i] <= 'Z'));
+		if ((format[i] < 'A') || (format[i] > 'z')) {
+			return _KELIMELIK_ERROR_INVALID_FORMAT;
+		}
+		switch (format[i] | 0x20) {
+			case 'b': // BYTE (8-bit)
+				value_type = KELIMELIK_OBJECT_UINT8;
+				break;
+			case 'd': // DWORD (32-bit)
+				value_type = KELIMELIK_OBJECT_UINT32;
+				break;
+			case 'q': // QWORD (64-bit)
+				value_type = KELIMELIK_OBJECT_UINT64;
+				break;
+			case 'i': // Integer (BYTE, DWORD or QWORD)
+				value_type = KELIMELIK_OBJECT_UNSPECIFIED;
+				break;
+			case 's': // String
+				value_type = KELIMELIK_OBJECT_STRING;
+				break;
+			default: // Invalid format
+				return _KELIMELIK_ERROR_INVALID_FORMAT;
+		}
+		enum kelimelik_object_type type_in_packet;
+		if (is_array) {
+			if (self->objects[i].type != KELIMELIK_OBJECT_ARRAY) {
+				return _KELIMELIK_ERROR_DIFFERENT_FORMAT;
+			}
+			type_in_packet = self->objects[i].array->type;
+		}
+		else {
+			type_in_packet = self->objects[i].type;
+		}
+		if (value_type != type_in_packet) {
+			return _KELIMELIK_ERROR_DIFFERENT_FORMAT;
+		}
+	}
+	if (format[i] != 0) {
+		return _KELIMELIK_ERROR_DIFFERENT_FORMAT;
+	}
+	return _KELIMELIK_SUCCESS;
+}
+
 kelimelik_error kelimelik_packet_encode(kelimelik_packet *self, void **out_bytes, size_t *out_len) {
 	size_t size;
 	kelimelik_error error = kelimelik_packet_encoded_size(self, &size);

@@ -25,7 +25,7 @@ int main(int argc, char **argv) {
 			"\x00\x00\x00\x00\x00\x00\x00\x03"
 			"\x00\x00\x00\x00\x00\x00\x00\x04"
 			"\x03" // UInt64
-			"\x01\x02\x03\x04\x01\x02\x03\x04"
+			"\x01\x02\x03\x04\x05\x06\x07\x08"
 		);
 		uint32_t size = ntohl(*(uint32_t *)input) + 4;
 		kelimelik_packet **new_packets;
@@ -48,9 +48,14 @@ int main(int argc, char **argv) {
 		assert(strcmp((char *)new_packet->objects[0].array->strings[3]->string, "the") == 0);
 		assert(strcmp((char *)new_packet->objects[0].array->strings[4]->string, "library") == 0);
 		assert(new_packet->objects[2].type == KELIMELIK_OBJECT_UINT64);
-		assert(new_packet->objects[2].uint64 == 0x0102030401020304);
+		assert(new_packet->objects[2].uint64 == 0x0102030405060708);
 		for (int i=0; i<5; i++) {
 			assert(new_packet->objects[1].array->uint64s[i] == i);
+		}
+		kelimelik_error error = kelimelik_verify_packet(new_packet, "SQq");
+		if (KELIMELIK_IS_ERROR(error)) {
+			fprintf(stderr, "Verification error: %s\n", kelimelik_strerror(error));
+			abort();
 		}
 		void *re_encoded;
 		size_t re_encoded_size;

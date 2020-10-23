@@ -6,13 +6,15 @@
 #include <assert.h>
 #include <unistd.h>
 
+// Warning: no libkelimelik error handling
+
 int main(int argc, char **argv) {
 	if (argc < 3) {
 		fprintf(stderr, "Usage: %s <uid> <password>\n", argv[0]);
 		return EXIT_FAILURE;
 	}
 	int fd;
-	kelimelik_error error = kelimelik_connection_new(&fd);
+	kelimelik_connection_new(&fd);
 	kelimelik_packet *packet;
 	kelimelik_packet_new_v1(&packet, "GameModule_requestLogin", 3);
 	kelimelik_packet_set_uint32(packet, 0, atoi(argv[1]));
@@ -37,11 +39,9 @@ int main(int argc, char **argv) {
 			fprintf(stderr, "recv() failed.\n");
 			return EXIT_FAILURE;
 		}
-		kelimelik_packet **new_packets;
-		size_t new_packets_len;
-		assert(!KELIMELIK_IS_ERROR(kelimelik_parser_advance_single(parser, val, &new_packets, &new_packets_len)));
-		if (new_packets_len) {
-			kelimelik_packet *new_packet = *new_packets;
+		kelimelik_packet *new_packet;
+		assert(!KELIMELIK_IS_ERROR(kelimelik_parser_advance_single(parser, val, &new_packet)));
+		if (new_packet) {
 			if (!strcmp((char *)new_packet->header->string, "GameModule_loginRefused")) {
 				fprintf(stderr, "Login refused.\n");
 				return EXIT_FAILURE;
